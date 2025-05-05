@@ -1,8 +1,22 @@
+@import "~taro-ui/dist/style/components/icon.scss";
+@import "~taro-ui/dist/style/components/input.scss";
+@import "~taro-ui/dist/style/components/textarea.scss";
+@import "~taro-ui/dist/style/components/button.scss";
+@import "~taro-ui/dist/style/components/image-picker.scss";
 
 .publish-page {
   padding: 20px;
   background: #f5f5f5;
   min-height: 100vh;
+
+  .title {
+    margin-bottom: 16px;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
 
   .form-section {
     background: #fff;
@@ -75,11 +89,16 @@
     }
 
     .video-wrapper {
-      margin-top: 12px;
+      .video-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+      }
 
       .video {
-        width: 100%;
-        max-height: 200px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
       }
 
       .upload-btn {
@@ -88,14 +107,8 @@
         border-radius: 4px;
         text-align: center;
         color: #666;
+        font-size: 32px;
       }
     }
-  }
-
-  .submit-btn {
-    background: #6190E8;
-    color: white;
-    font-weight: bold;
-    margin-top: 20px;
   }
 }

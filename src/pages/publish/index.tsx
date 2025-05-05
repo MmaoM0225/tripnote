@@ -1,29 +1,18 @@
 import { useState } from 'react'
-import { View, Text, Input, Textarea, Button, Image, Video } from '@tarojs/components'
-import { chooseImage, chooseVideo, showToast, navigateBack, eventCenter } from '@tarojs/taro'
+import { View, Text, Video } from '@tarojs/components'
+import { chooseVideo, showToast, navigateBack, eventCenter } from '@tarojs/taro'
+import { AtInput, AtTextarea, AtButton, AtIcon, AtImagePicker } from 'taro-ui'
 import './index.scss'
 
 export default function PublishPage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [images, setImages] = useState<string[]>([])
+  const [files, setFiles] = useState<any[]>([]) // AtImagePicker 文件结构
   const [video, setVideo] = useState<string>('')
 
-  // 选择图片（最多9张）
-  const handleChooseImages = async () => {
-    const res = await chooseImage({
-      count: 9 - images.length,
-      sizeType: ['original', 'compressed'],
-      sourceType: ['album', 'camera'],
-    })
-    setImages([...images, ...res.tempFilePaths])
-  }
-
-  // 删除图片
-  const removeImage = (index: number) => {
-    const newImages = [...images]
-    newImages.splice(index, 1)
-    setImages(newImages)
+  // AtImagePicker 改变（添加/删除）
+  const handleChangeImages = (newFiles) => {
+    setFiles(newFiles)
   }
 
   // 选择视频
@@ -34,67 +23,83 @@ export default function PublishPage() {
     const res = await chooseVideo({ sourceType: ['album', 'camera'], maxDuration: 60 })
     setVideo(res.tempFilePath)
   }
-
-  // 提交校验与发布
+  // 校验并提交
   const handleSubmit = () => {
-    if (!title.trim() || !content.trim() || images.length === 0) {
+    if (!title.trim() || !content.trim() || files.length === 0) {
       showToast({ title: '标题、内容和图片为必填项', icon: 'none' })
       return
     }
 
-    // TODO: 上传图片、视频文件到服务器，保存数据库记录
-    console.log({ title, content, images, video })
+    // TODO：上传 files 和 video 到服务器
 
-    // 假设保存成功，跳转回游记页面并刷新
     showToast({ title: '发布成功', icon: 'success' })
     setTimeout(() => {
-      eventCenter.trigger('refreshJournals') // 通知上一页刷新
+      eventCenter.trigger('refreshJournals')
       navigateBack()
     }, 1000)
   }
 
   return (
     <View className='publish-page'>
+      <View className='title'>
+        <AtIcon value='edit' size='30' color='#000' /> 编辑游记
+      </View>
+
       <View className='form-section'>
-        <Input
-          className='input'
+        <AtInput
+          name='title'
+          title='标题'
           placeholder='请输入标题'
           value={title}
-          onInput={(e) => setTitle(e.detail.value)}
+          onChange={(v) => setTitle(v as string)}
         />
-        <Textarea
-          className='textarea'
-          placeholder='请输入内容'
+        <AtTextarea
           value={content}
-          onInput={(e) => setContent(e.detail.value)}
+          onChange={(v) => setContent(v)}
+          maxLength={1000}
+          placeholder='请输入内容'
         />
       </View>
 
       <View className='media-section'>
         <Text className='label'>图片上传（最多9张）</Text>
-        <View className='images'>
-          {images.map((img, index) => (
-            <View className='img-wrapper' key={index}>
-              <Image className='image' src={img} mode='aspectFill' />
-              <View className='remove-btn' onClick={() => removeImage(index)}>×</View>
-            </View>
-          ))}
-          {images.length < 9 && (
-            <View className='upload-btn' onClick={handleChooseImages}>+</View>
-          )}
-        </View>
+        <AtImagePicker
+          files={files}
+          count={9}
+          multiple
+          onChange={handleChangeImages}
+        />
 
-        <Text className='label'>视频上传（仅1个）</Text>
+        <Text className='label' style={{ marginTop: '16px' }}>视频上传（仅1个）</Text>
         <View className='video-wrapper'>
           {video ? (
-            <Video src={video} className='video' controls />
+            <View className='video-container'>
+              <Video
+                src={video}
+                className='video'
+                controls
+                style={{ width: '100%', height: '200px', borderRadius: '8px' }}
+              />
+              <View className='video-btns'>
+
+                <AtButton
+                  size='normal'
+                  type='secondary'
+                  onClick={() => setVideo('')}
+                >
+                  删除视频
+                </AtButton>
+              </View>
+            </View>
           ) : (
             <View className='upload-btn' onClick={handleChooseVideo}>上传视频</View>
           )}
         </View>
       </View>
 
-      <Button className='submit-btn' onClick={handleSubmit}>发布</Button>
+      <AtButton type='primary' className='submit-btn' onClick={handleSubmit}>
+        发布
+      </AtButton>
     </View>
   )
 }
