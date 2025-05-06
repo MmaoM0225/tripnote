@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, Video } from '@tarojs/components'
+import {View, Text, Video} from '@tarojs/components'
 import { chooseVideo, showToast, navigateBack, eventCenter } from '@tarojs/taro'
 import { AtInput, AtTextarea, AtButton, AtIcon, AtImagePicker } from 'taro-ui'
 import './index.scss'
@@ -52,12 +52,14 @@ export default function PublishPage() {
           placeholder='请输入标题'
           value={title}
           onChange={(v) => setTitle(v as string)}
+          className='input'
         />
         <AtTextarea
           value={content}
           onChange={(v) => setContent(v)}
           maxLength={1000}
           placeholder='请输入内容'
+          className='textarea'
         />
       </View>
 
