@@ -1,0 +1,15 @@
+### /login
+GET http://localhost:3000/user/api/lgin
+
+
+###
+
+### 注册接口测试
+POST http://localhost:3000/api/user/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "12345678",
+  "nickname": "测试昵称"
+}
