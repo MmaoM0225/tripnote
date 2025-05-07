@@ -18,7 +18,6 @@ export default function Index() {
   const [passwordError, setPasswordError] = useState('')
   const [confirmError, setConfirmError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [checking, setChecking] = useState(false)
 
   useEffect(() => {
@@ -92,16 +91,15 @@ export default function Index() {
 
       if (res.data.code === 0) {
         Taro.showToast({ title: '注册成功', icon: 'success' });
-        setIsSubmitting(false);
         setTimeout(() => {
           Taro.navigateTo({ url: '/pages/login/index' }); // 注册成功跳转登录页
         }, 1000);
       } else {
         Taro.showToast({ title: res.data.message || '注册失败', icon: 'none' });
-        setIsSubmitting(false);
       }
     } catch (err) {
       Taro.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
+    }finally {
       setIsSubmitting(false);
     }
   };

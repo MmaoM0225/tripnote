@@ -33,7 +33,7 @@ export default function MePage() {
           <Image className='avatar' src='https://randomuser.me/api/portraits/men/11.jpg' />
           <Text className='nickname'>张三</Text>
         </View>
-        <View className='user-right' onClick={() => navigateTo({ url: '/pages/profile/index' })}>
+        <View className='user-right' onClick={() => navigateTo({ url: '/pages/login/index' })}>
           <Text className='info-btn'>个人信息</Text>
           <AtIcon value='chevron-right' size='20' color='#999' />
         </View>

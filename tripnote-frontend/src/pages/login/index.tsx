@@ -3,13 +3,38 @@ import {View, Text, Image, Checkbox, Input} from '@tarojs/components'
 import {AtButton} from 'taro-ui'
 import './index.scss'
 import logo from '../../assets/logo.png'
+import { login } from '../../api/user'
+import Taro from "@tarojs/taro";
 
 export default function Index() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [agree, setAgree] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const canLogin = username && password && agree
+
+  const handleLogin = async () => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+    try {
+      const res = await login({ username, password })
+      if (res.data.code === 0) {
+        Taro.setStorageSync('token', res.data.data.token)
+        Taro.showToast({ title: '登录成功', icon: 'success' })
+        setTimeout(() => {
+          Taro.switchTab({ url: '/pages/index/index' })
+        }, 1000);
+      } else {
+        Taro.showToast({ title: res.data.message || '登录失败', icon: 'none' })
+      }
+    } catch (err) {
+      Taro.showToast({ title: '网络错误，请稍后重试', icon: 'none' })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
 
   return (
     <View className='login-page'>
@@ -47,6 +72,7 @@ export default function Index() {
         <AtButton
           type='primary'
           disabled={!canLogin}
+          onClick={handleLogin}
         >
           登录
         </AtButton>
@@ -66,7 +92,7 @@ export default function Index() {
         <Text>|</Text>
         <Text>其他方式登录</Text>
         <Text>|</Text>
-        <Text>注册</Text>
+        <Text onClick={() => Taro.navigateTo({ url: '/pages/register/index' })}>注册</Text>
         <Text>|</Text>
         <Text>更多</Text>
       </View>

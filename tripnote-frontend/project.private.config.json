@@ -4,13 +4,20 @@
       "list": [
         {
           "name": "pages/login/index",
-          "pathName": "pages/register/index",
+          "pathName": "pages/login/index",
           "query": "",
           "scene": null,
           "launchMode": "default"
         },
         {
           "name": "pages/detail/index",
+          "pathName": "pages/login/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/login/index",
           "pathName": "pages/register/index",
           "query": "",
           "launchMode": "default",
