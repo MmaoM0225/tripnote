@@ -21,3 +21,8 @@ Content-Type: application/json
 ### 获取用户信息接口测试
 GET http://localhost:3000/api/user/current
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsIm5pY2tuYW1lIjoi5rWL6K-V5pi156ewIiwiaWF0IjoxNzQ2NjEzNDcwLCJleHAiOjE3NDcyMTgyNzB9.XSsHnZY3ilpOomil6UdsF_Vg2Vh303cubKqNT4E6Dw0
+
+### 检查用户名接口测试
+GET http://localhost:3000/api/user/check?type=username&value=existingUser
+### 检查用户名接口测试
+GET http://localhost:3000/api/user/check?type=username&value=testuser001
