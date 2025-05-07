@@ -4,16 +4,8 @@ import {AtButton} from 'taro-ui'
 import './index.scss'
 import logo from '../../assets/logo.png'
 
-// 模拟异步校验
-const mockCheckExist = async (type: 'username' | 'nickname', value: string) => {
-  return new Promise<boolean>((resolve) => {
-    setTimeout(() => {
-      if (type === 'username' && value === 'existingUser') resolve(true)
-      else if (type === 'nickname' && value === '小明') resolve(true)
-      else resolve(false)
-    }, 500)
-  })
-}
+import {checkExist, register} from '../../api/user'
+import Taro from "@tarojs/taro";
 
 export default function Index() {
   const [nickname, setNickname] = useState('')
@@ -21,19 +13,20 @@ export default function Index() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [agree, setAgree] = useState(false)
-
   const [nicknameError, setNicknameError] = useState('')
   const [usernameError, setUsernameError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [confirmError, setConfirmError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [checking, setChecking] = useState(false)
 
   useEffect(() => {
     if (nickname) {
       setChecking(true)
-      mockCheckExist('nickname', nickname).then((exists) => {
-        setNicknameError(exists ? '昵称已存在' : '')
+      checkExist({type:'nickname',value: nickname}).then((res) => {
+        setNicknameError(res.data.data.exists ? '昵称已存在' : '')
+      }).finally(() => {
         setChecking(false)
       })
     } else {
@@ -47,8 +40,9 @@ export default function Index() {
         setUsernameError('账号长度需大于8位')
       } else {
         setChecking(true)
-        mockCheckExist('username', username).then((exists) => {
-          setUsernameError(exists ? '账号已存在' : '')
+        checkExist({type:'username',value: username}).then((res) => {
+          setUsernameError(res.data.data.exists ? '账号已存在' : '')
+        }).finally(() => {
           setChecking(false)
         })
       }
@@ -84,6 +78,33 @@ export default function Index() {
     !confirmError &&
     !checking &&
     agree
+
+  const handleRegister = async () => {
+      if (isSubmitting) return;
+      setIsSubmitting(true);
+    try {
+      const res = await register({
+        nickname,
+        username,
+        password,
+        confirmPassword
+      });
+
+      if (res.data.code === 0) {
+        Taro.showToast({ title: '注册成功', icon: 'success' });
+        setIsSubmitting(false);
+        setTimeout(() => {
+          Taro.navigateTo({ url: '/pages/login/index' }); // 注册成功跳转登录页
+        }, 1000);
+      } else {
+        Taro.showToast({ title: res.data.message || '注册失败', icon: 'none' });
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      Taro.showToast({ title: '网络异常，请稍后重试', icon: 'none' });
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <View className='register-page'>
@@ -134,7 +155,7 @@ export default function Index() {
       </View>
 
       <View className='register-button'>
-        <AtButton type='primary' disabled={!canRegister}>注册</AtButton>
+        <AtButton type='primary' disabled={!canRegister} onClick={handleRegister}>注册</AtButton>
       </View>
     </View>
   )

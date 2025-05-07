@@ -6,12 +6,16 @@ const SALT_ROUNDS = 10;
 
 const CODE = {
     SUCCESS: 0,
+    SERVER_ERROR: 5000,
     NICKNAME_INVALID: 1001,
     USERNAME_INVALID: 1002,
     PASSWORD_MISMATCH: 1003,
     PASSWORD_INVALID: 1004,
     UNAUTHORIZED: 1001,
-    SERVER_ERROR: 5000,
+    PARAM_ERROR: 1001,
+    USERNAME_NOT_FOUND: 1001,
+    PASSWORD_INCORRECT: 1001
+
 
 };
 
@@ -165,8 +169,35 @@ const getCurrentUser = async (req, res) => {
         return res.status(500).json({ code: CODE.SERVER_ERROR, message: '服务器错误' });
     }
 };
+
+// 检查用户名或昵称是否存在
+const checkExist = async (req, res) => {
+    const { type, value } = req.query;
+
+    if (!['username', 'nickname'].includes(type)) {
+        return res.status(400).json({ code: CODE.PARAM_ERROR, message: '参数错误' });
+    }
+
+    try {
+        const where = {};
+        where[type] = value;
+
+        const user = await User.findOne({ where });
+
+        return res.status(200).json({
+            code: CODE.SUCCESS,
+            message: '查询成功',
+            data: { exists: !!user },
+        });
+    } catch (err) {
+        console.error('检查是否存在出错：', err);
+        return res.status(500).json({ code: CODE.SERVER_ERROR, message: '服务器错误' });
+    }
+};
+
 module.exports = {
     register,
     login,
     getCurrentUser,
+    checkExist,
 };
