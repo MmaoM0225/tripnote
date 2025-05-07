@@ -1,15 +1,23 @@
-### /login
-GET http://localhost:3000/user/api/lgin
-
-
-###
-
 ### 注册接口测试
 POST http://localhost:3000/api/user/register
 Content-Type: application/json
 
 {
-  "username": "testuser",
+  "nickname": "测试昵称",
+  "username": "testuser001",
   "password": "12345678",
-  "nickname": "测试昵称"
+  "confirmPassword": "12345678"
 }
+
+### 登录接口测试
+POST http://localhost:3000/api/user/login
+Content-Type: application/json
+
+{
+  "username": "testuser001",
+  "password": "12345678"
+}
+
+### 获取用户信息接口测试
+GET http://localhost:3000/api/user/current
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsIm5pY2tuYW1lIjoi5rWL6K-V5pi156ewIiwiaWF0IjoxNzQ2NjEzNDcwLCJleHAiOjE3NDcyMTgyNzB9.XSsHnZY3ilpOomil6UdsF_Vg2Vh303cubKqNT4E6Dw0

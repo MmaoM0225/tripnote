@@ -1,16 +1,172 @@
-exports.register = (req, res) => {
-    const { nickname, username, password } = req.body
-    // 模拟注册逻辑
-    console.log('注册请求:', req.body)
-    res.json({ success: true, message: '注册成功' })
-}
+const { User } = require('../models');
+require('dotenv').config();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const SALT_ROUNDS = 10;
 
-exports.login = (req, res) => {
-    const { username, password } = req.body
-    // 模拟登录逻辑
-    if (username === 'test' && password === '12345678') {
-        res.json({ success: true, token: 'mock-token' })
-    } else {
-        res.status(401).json({ success: false, message: '用户名或密码错误' })
+const CODE = {
+    SUCCESS: 0,
+    NICKNAME_INVALID: 1001,
+    USERNAME_INVALID: 1002,
+    PASSWORD_MISMATCH: 1003,
+    PASSWORD_INVALID: 1004,
+    UNAUTHORIZED: 1001,
+    SERVER_ERROR: 5000,
+
+};
+
+// 注册接口
+const register = async (req, res) => {
+    const { nickname, username, password, confirmPassword } = req.body;
+
+    try {
+        // 1. 检查昵称
+        if (!nickname) {
+            return res.status(400).json({
+                code: CODE.NICKNAME_INVALID,
+                message: '用户昵称不合理',
+                status: 'false'
+            });
+        }
+        const existingNickname = await User.findOne({ where: { nickname } });
+        if (existingNickname) {
+            return res.status(400).json({
+                code: CODE.NICKNAME_INVALID,
+                message: '用户昵称已存在',
+                status: 'false'
+            });
+        }
+
+        // 2. 检查账号
+        if (!username || username.length < 8) {
+            return res.status(400).json({
+                code: CODE.USERNAME_INVALID,
+                message: '账号不合法，需大于等于8位',
+                status: 'false'
+            });
+        }
+        const existingUser = await User.findOne({ where: { username } });
+        if (existingUser) {
+            return res.status(400).json({
+                code: CODE.USERNAME_INVALID,
+                message: '账号已存在',
+                status: 'false'
+            });
+        }
+
+        // 3. 密码一致性检查
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                code: CODE.PASSWORD_MISMATCH,
+                message: '两次密码不一致',
+                status: 'false'
+            });
+        }
+
+        // 4. 密码合法性检查
+        if (!password || password.length < 8) {
+            return res.status(400).json({
+                code: CODE.PASSWORD_INVALID,
+                message: '密码不合法，需大于等于8位',
+                status: 'false'
+            });
+        }
+        // 5. 密码加密
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+        // 6. 创建用户
+        const newUser = await User.create({ nickname, username, password: hashedPassword,});
+
+        // 成功状态返回
+        res.status(200).json({
+            code: CODE.SUCCESS,
+            message: '注册成功',
+            status: 'success',  // 成功状态
+            data: { id: newUser.id, nickname: newUser.nickname }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            code: CODE.SERVER_ERROR,
+            message: '服务器内部错误',
+            status: 'false'  // 添加失败状态
+        });
     }
-}
+};
+
+// 登录接口
+const login = async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.findOne({ where: { username } });
+
+        if (!user) {
+            return res.status(400).json({ code: CODE.USERNAME_NOT_FOUND, message: '账号或密码错误' });
+        }
+
+        const isMatch = bcrypt.compareSync(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ code: CODE.PASSWORD_INCORRECT, message: '账号或密码错误' });
+        }
+
+        // 生成 JWT
+        const token = jwt.sign(
+            { userId: user.id, nickname: user.nickname },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN }
+        );
+
+        res.status(200).json({
+            code: CODE.SUCCESS,
+            message: '登录成功',
+            data: {
+                token,
+                user: {
+                    id: user.id,
+                    nickname: user.nickname,
+                    username: user.username
+                }
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ code: CODE.SERVER_ERROR, message: '服务器内部错误' });
+    }
+};
+// 获取当前用户
+const getCurrentUser = async (req, res) => {
+    const userId = req.userId; // 来自 verifyToken 中间件
+
+    if (!userId) {
+        return res.status(401).json({ code: CODE.UNAUTHORIZED, message: '未授权，请登录' });
+    }
+
+    try {
+        const user = await User.findOne({ where: { id: userId } });
+
+        if (!user) {
+            return res.status(404).json({ code: CODE.UNAUTHORIZED, message: '用户不存在' });
+        }
+
+        return res.status(200).json({
+            code: CODE.SUCCESS,
+            message: '获取用户信息成功',
+            data: {
+                id: user.id,
+                nickname: user.nickname,
+                avatar: user.avatar,
+                status: user.status,
+                role: user.role
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ code: CODE.SERVER_ERROR, message: '服务器错误' });
+    }
+};
+module.exports = {
+    register,
+    login,
+    getCurrentUser,
+};
