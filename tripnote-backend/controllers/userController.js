@@ -14,7 +14,8 @@ const CODE = {
     UNAUTHORIZED: 1001,
     PARAM_ERROR: 1001,
     USERNAME_NOT_FOUND: 1001,
-    PASSWORD_INCORRECT: 1001
+    PASSWORD_INCORRECT: 1001,
+    USER_NOT_FOUND: 1001
 
 
 };
@@ -129,7 +130,9 @@ const login = async (req, res) => {
                 user: {
                     id: user.id,
                     nickname: user.nickname,
-                    username: user.username
+                    avatar: user.avatar,
+                    status: user.status,
+                    role: user.role
                 }
             }
         });
@@ -195,9 +198,48 @@ const checkExist = async (req, res) => {
     }
 };
 
+// controllers/userController.js
+const updateAvatar = async (req, res) => {
+    const userId = req.userId; // 从 JWT 中解析
+    const file = req.file;
+
+    if (!file) {
+        return res.status(400).json({ code: 1003, message: '未上传头像文件' });
+    }
+
+    const avatarUrl = `uploads/avatars/${file.filename}`;
+
+    try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ code: 1001, message: '用户不存在' });
+        }
+
+        user.avatar = avatarUrl;
+        await user.save();
+
+        return res.status(200).json({
+            code: 0,
+            message: '头像更新成功',
+            data: {
+                avatar: avatarUrl,
+            },
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ code: 5000, message: '服务器内部错误' });
+    }
+};
+
+module.exports = {
+    updateAvatar,
+};
+
+
 module.exports = {
     register,
     login,
     getCurrentUser,
     checkExist,
+    updateAvatar,
 };
