@@ -1,40 +1,126 @@
-import { View, Text, Image } from '@tarojs/components'
-import { AtIcon, AtList, AtListItem } from 'taro-ui'
-import './index.scss'
-import { useLoad, navigateTo } from '@tarojs/taro'
+import {View, Text, Image, Button} from '@tarojs/components';
+import {AtIcon, AtImagePicker, AtList, AtListItem} from 'taro-ui';
+import './index.scss';
+import Taro, { navigateTo, eventCenter} from '@tarojs/taro';
+import { useAuth } from '../../hooks/useAuth'; // 导入useAuth hook
+import avatarDefault from '../../assets/avatar-default.jpg';
+import {useEffect, useState} from "react";
+import {uploadAvatar} from "../../api/user";
 
-export default function MePage() {
 
-  useLoad(() => {
-    console.log('我的页面加载了')
-  })
+export default function Index() {
+
+  const { user, isLoggedIn, reloadUserInfo } = useAuth();
+  const [showEdit, setShowEdit] = useState(false);
+  const [files, setFiles] = useState<{ url: string }[]>([]);
+
+// 监听登录成功事件
+  useEffect(() => {
+    const handleLoginSuccess = () => {
+      reloadUserInfo(); // 重新加载用户信息
+    };
+
+    eventCenter.on('loginSuccess', handleLoginSuccess);
+    return () => {
+      eventCenter.off('loginSuccess', handleLoginSuccess);
+    };
+  }, []);
   const handleJournalClick = (status: string) => {
     switch (status) {
       case 'published':
-        navigateTo({ url: '/pages/journals/published' }) // 跳转到已发布页面
-        break
+        navigateTo({ url: '/pages/journals/published' });
+        break;
       case 'pending':
-        navigateTo({ url: '/pages/journals/pending' }) // 跳转到待审核页面
-        break
+        navigateTo({ url: '/pages/journals/pending' });
+        break;
       case 'rejected':
-        navigateTo({ url: '/pages/journals/rejected' }) // 跳转到未通过页面
-        break
+        navigateTo({ url: '/pages/journals/rejected' });
+        break;
       default:
-        break
+        break;
     }
-  }
+  };
+  const handleUpload = async () => {
+    if (files.length === 0) return;
+
+    const tempFilePath = files[0].url;
+
+    try {
+      const avatarData = await uploadAvatar(tempFilePath);
+
+      // ✅ 更新本地用户信息
+      const userInfo = Taro.getStorageSync('user') || {};
+      userInfo.avatar = avatarData.avatar;
+      Taro.setStorageSync('user', userInfo);
+
+      reloadUserInfo();
+      setShowEdit(false);
+      Taro.showToast({ title: '头像更新成功', icon: 'success' });
+      console.log(Taro.getStorageSync('user'));
+    } catch (e: any) {
+      console.error(e);
+      Taro.showToast({ title: e.message || '上传失败', icon: 'none' });
+    }
+  };
 
   return (
     <View className='me-page'>
 
+      {showEdit && (
+        <View className='edit-overlay'>
+          <View className='edit-box'>
+            <View className='edit-header'>
+              <Text>修改个人信息</Text>
+              <AtIcon value='close' size='20' onClick={() => setShowEdit(false)} />
+            </View>
+            <View className='edit-content'>
+              <Text>选择头像：</Text>
+              <AtImagePicker
+                files={files}
+                onChange={(newFiles) => setFiles(newFiles)}
+                count={1}
+                showAddBtn={files.length < 1}
+              />
+              <Button type='primary' onClick={handleUpload}>上传</Button>
+            </View>
+          </View>
+        </View>
+
+      )}
+
       {/* 顶部个人信息 */}
       <View className='user-info'>
         <View className='user-left'>
-          <Image className='avatar' src='https://randomuser.me/api/portraits/men/11.jpg' />
-          <Text className='nickname'>张三</Text>
+          <Image
+            className='avatar'
+            mode='aspectFill'
+            src={user?.avatar ? 'http://localhost:3000/' + user.avatar : avatarDefault}
+            onClick={() => {
+              if (user?.avatar) {
+                Taro.previewImage({
+                  current: 'http://localhost:3000/' + user.avatar, // 当前显示图片
+                  urls: ['http://localhost:3000/' + user.avatar], // 图片列表
+                });
+              }
+            }}
+          />
+          <Text className='nickname'>
+            {isLoggedIn ? user?.nickname || '匿名用户' : '未登录，请先登录吧'}
+          </Text>
         </View>
-        <View className='user-right' onClick={() => navigateTo({ url: '/pages/login/index' })}>
-          <Text className='info-btn'>个人信息</Text>
+        <View
+          className='user-right'
+          onClick={() => {
+            if (!isLoggedIn) {
+              navigateTo({ url: '/pages/login/index' });
+            } else {
+              setShowEdit(true);
+            }
+          }}
+        >
+          <Text className='info-btn'>
+            {isLoggedIn ? '修改个人信息' : '前往登录'}
+          </Text>
           <AtIcon value='chevron-right' size='20' color='#999' />
         </View>
       </View>
@@ -57,14 +143,15 @@ export default function MePage() {
           </View>
         </View>
       </View>
+
       {/* 其他 区域 */}
-      <View className='other'>
-      </View>
+      <View className='other'></View>
+
       {/* 客服 & 设置 */}
       <AtList className='bottom-list'>
         <AtListItem title='联系客服' arrow='right' iconInfo={{ value: 'phone' }} />
         <AtListItem title='设置' arrow='right' iconInfo={{ value: 'settings' }} />
       </AtList>
     </View>
-  )
+  );
 }

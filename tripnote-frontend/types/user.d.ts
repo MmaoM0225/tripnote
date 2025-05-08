@@ -1,3 +1,4 @@
+
 export namespace UserAPI {
   export interface LoginParams {
     username: string;
@@ -23,6 +24,7 @@ export namespace UserAPI {
     type: 'username' | 'nickname';
     value: string;
   }
+
 
   export interface Response<T = any> {
     code: number;

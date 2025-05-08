@@ -4,7 +4,7 @@ import {AtButton} from 'taro-ui'
 import './index.scss'
 import logo from '../../assets/logo.png'
 import { login } from '../../api/user'
-import Taro from "@tarojs/taro";
+import Taro, {eventCenter} from "@tarojs/taro";
 
 export default function Index() {
   const [username, setUsername] = useState('')
@@ -21,9 +21,11 @@ export default function Index() {
       const res = await login({ username, password })
       if (res.data.code === 0) {
         Taro.setStorageSync('token', res.data.data.token)
+        Taro.setStorageSync('user', res.data.data.user)
+        eventCenter.trigger('loginSuccess');
         Taro.showToast({ title: '登录成功', icon: 'success' })
         setTimeout(() => {
-          Taro.switchTab({ url: '/pages/index/index' })
+          Taro.navigateBack(); // 或 navigateTo 到我的页面
         }, 1000);
       } else {
         Taro.showToast({ title: res.data.message || '登录失败', icon: 'none' })
