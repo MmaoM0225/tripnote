@@ -29,7 +29,6 @@ export namespace UserAPI {
   export interface Response<T = any> {
     code: number;
     message: string;
-    status: 'success'|'false';
     data: T;
   }
 }
