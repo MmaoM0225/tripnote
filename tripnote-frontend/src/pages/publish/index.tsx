@@ -1,21 +1,26 @@
 import { useState } from 'react'
-import {View, Text, Video} from '@tarojs/components'
+import {View, Text, Input, Video, Textarea} from '@tarojs/components'
 import { chooseVideo, showToast, navigateBack, eventCenter } from '@tarojs/taro'
-import { AtInput, AtTextarea, AtButton, AtIcon, AtImagePicker } from 'taro-ui'
+import { AtButton, AtIcon, AtImagePicker } from 'taro-ui'
 import './index.scss'
+
+const seasonOptions = ['春季', '夏季', '秋季', '冬季']
 
 export default function PublishPage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [files, setFiles] = useState<any[]>([]) // AtImagePicker 文件结构
+  const [files, setFiles] = useState<any[]>([])
   const [video, setVideo] = useState<string>('')
 
-  // AtImagePicker 改变（添加/删除）
+  const [location, setLocation] = useState('')
+  const [seasonIndex, setSeasonIndex] = useState(0)
+  const [cost, setCost] = useState('')
+  const [days, setDays] = useState('')
+
   const handleChangeImages = (newFiles) => {
     setFiles(newFiles)
   }
 
-  // 选择视频
   const handleChooseVideo = async () => {
     if (video) {
       return showToast({ title: '只能上传一个视频', icon: 'none' })
@@ -23,14 +28,14 @@ export default function PublishPage() {
     const res = await chooseVideo({ sourceType: ['album', 'camera'], maxDuration: 60 })
     setVideo(res.tempFilePath)
   }
-  // 校验并提交
+
   const handleSubmit = () => {
     if (!title.trim() || !content.trim() || files.length === 0) {
       showToast({ title: '标题、内容和图片为必填项', icon: 'none' })
       return
     }
 
-    // TODO：上传 files 和 video 到服务器
+    // TODO：上传所有字段和媒体到服务器
 
     showToast({ title: '发布成功', icon: 'success' })
     setTimeout(() => {
@@ -46,19 +51,72 @@ export default function PublishPage() {
       </View>
 
       <View className='form-section'>
-        <AtInput
-          name='title'
-          title='标题'
-          placeholder='请输入标题'
-          value={title}
-          onChange={(v) => setTitle(v as string)}
-          className='input'
-        />
-        <AtTextarea
+
+        <View className='input-group'>
+          <Text className='input-label'>旅游地点：</Text>
+          <Input
+            className='input-field'
+            type='text'
+            maxlength={6}
+            placeholder='请输入地点'
+            value={location}
+            onInput={(e) => setLocation(e.detail.value)}
+          />
+        </View>
+
+        <View className='input-group'>
+          <Text className='input-label'>旅行季节：</Text>
+          <View className='season-tags'>
+            {seasonOptions.map((season, index) => (
+              <View
+                key={season}
+                className={`season-tag ${seasonIndex === index ? 'active' : ''}`}
+                onClick={() => setSeasonIndex(index)}
+              >
+                {season}
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View className='input-group'>
+          <Text className='input-label'>旅行花费：</Text>
+          <Input
+            className='input-field'
+            type='digit'
+            placeholder='请输入花费（元）'
+            value={cost}
+            onInput={(e) => setCost(e.detail.value)}
+          />
+        </View>
+
+        <View className='input-group'>
+          <Text className='input-label'>行程天数：</Text>
+          <Input
+            className='input-field'
+            type='number'
+            placeholder='请输入天数'
+            value={days}
+            onInput={(e) => setDays(e.detail.value)}
+          />
+        </View>
+
+        <View className='input-group'>
+          <Text className='input-label'>游记标题：</Text>
+          <Input
+            className='input-field'
+            type='text'
+            placeholder='请输入标题'
+            value={title}
+            onInput={(e) => setTitle(e.detail.value)}
+          />
+        </View>
+
+        <Textarea
           value={content}
-          onChange={(v) => setContent(v)}
-          maxLength={1000}
+          onInput={(e) => setContent(e.detail.value)}
           placeholder='请输入内容'
+          maxlength={1000}
           className='textarea'
         />
       </View>
@@ -83,7 +141,6 @@ export default function PublishPage() {
                 style={{ width: '100%', height: '200px', borderRadius: '8px' }}
               />
               <View className='video-btns'>
-
                 <AtButton
                   size='normal'
                   type='secondary'

@@ -25,7 +25,7 @@ export default function Index() {
         eventCenter.trigger('loginSuccess');
         Taro.showToast({ title: '登录成功', icon: 'success' })
         setTimeout(() => {
-          Taro.navigateBack(); // 或 navigateTo 到我的页面
+          Taro.switchTab({ url: '/pages/my/index' })
         }, 1000);
       } else {
         Taro.showToast({ title: res.data.message || '登录失败', icon: 'none' })

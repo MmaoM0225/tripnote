@@ -1,5 +1,4 @@
 @import "~taro-ui/dist/style/components/icon.scss";
-@import "~taro-ui/dist/style/components/input.scss";
 @import "~taro-ui/dist/style/components/textarea.scss";
 @import "~taro-ui/dist/style/components/button.scss";
 @import "~taro-ui/dist/style/components/image-picker.scss";
@@ -10,10 +9,12 @@
   min-height: 100vh;
 
   .title {
+    height: 100px;
     margin-bottom: 16px;
     font-size: 48px;
     font-weight: bold;
     text-align: center;
+    line-height: 100px;
     background: #fff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
@@ -24,18 +25,63 @@
     border-radius: 8px;
     margin-bottom: 16px;
 
-    .input {
-      border-bottom: 1px solid #eee;
-      padding: 12px 0;
-      font-size: 32px;
+    .input-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .input-label {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .input-field {
+        flex: 31;
+        padding: 12px;
+        font-size: 28px;
+        background: #fdfdfd;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+
+      .season-tags {
+        flex:3;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+
+        .season-tag {
+          padding: 10px 20px;
+          background-color: #f0f0f0;
+          border-radius: 20px;
+          font-size: 26px;
+          color: #333;
+          border: 1px solid transparent;
+        }
+
+        .season-tag.active {
+          background-color: #0084ff;
+          color: white;
+          border-color: #0084ff;
+        }
+      }
     }
 
     .textarea {
-
-      height: 120px;
-      margin-top: 12px;
-      font-size: 23px;
+      width: 100%;
+      min-height: 200px;
+      padding: 12px;
+      font-size: 28px;
+      background: #fdfdfd;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-sizing: border-box;
     }
+
   }
 
   .media-section {
@@ -50,51 +96,11 @@
       display: block;
     }
 
-    .images {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-
-      .img-wrapper {
-        position: relative;
-
-        .image {
-          width: 100px;
-          height: 100px;
-          border-radius: 4px;
-        }
-
-        .remove-btn {
-          position: absolute;
-          top: -5px;
-          right: -5px;
-          background: red;
-          color: white;
-          border-radius: 50%;
-          padding: 2px 6px;
-          font-size: 12px;
-        }
-      }
-
-      .upload-btn {
-        width: 100px;
-        height: 100px;
-        background: #eee;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 4px;
-        font-size: 24px;
-        color: #999;
-      }
-    }
-
     .video-wrapper {
       .video-container {
         display: flex;
         flex-direction: column;
         gap: 12px;
-
       }
 
       .video {
@@ -111,5 +117,9 @@
         font-size: 32px;
       }
     }
+  }
+
+  .submit-btn {
+    margin-top: 24px;
   }
 }
