@@ -3,8 +3,8 @@ const User = require('./user');
 const Note = require('./note'); // 提前创建好游记模型文件
 
 // 如果有模型间的关联，可以在这里设置
-// User.hasMany(Note)
-// Note.belongsTo(User)
+User.hasMany(Note, { foreignKey: 'user_id' });
+Note.belongsTo(User, { foreignKey: 'user_id', as: 'author' });
 
 const db = {
     sequelize,

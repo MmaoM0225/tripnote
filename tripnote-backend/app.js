@@ -13,6 +13,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // 引入用户路由
 const userRoutes = require('./routes/user')
 app.use('/api/user', userRoutes)
+// 引入笔记路由
+const noteRoutes = require('./routes/note');
+app.use('/api/note', noteRoutes);
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {

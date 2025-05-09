@@ -10,7 +10,7 @@ const User = sequelize.define('User', {
     status: { type: DataTypes.INTEGER, defaultValue: 1 },
     phone: { type: DataTypes.STRING },
     email: { type: DataTypes.STRING },
-    isDeleted: { type: DataTypes.BOOLEAN, defaultValue: false },
+    is_deleted: { type: DataTypes.BOOLEAN, defaultValue: false },
     role: { type: DataTypes.STRING, defaultValue: 'user' }
 }, {
     timestamps: true,
