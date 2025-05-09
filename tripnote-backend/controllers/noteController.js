@@ -1,6 +1,28 @@
 
 const { Note, User } = require('../models');
 const { Op } = require('sequelize');
+
+// 上传图片
+const uploadImages = (req, res) => {
+    try {
+        const urls = req.files.map(file => `/uploads/image/${file.filename}`);
+        res.json({ code: 0, message: '上传成功', data: urls });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ code: 1, message: '上传失败', error: error.message });
+    }
+};
+
+// 上传视频
+const uploadVideo = (req, res) => {
+    try {
+        const url = `/uploads/video/${req.file.filename}`;
+        res.json({ code: 0, message: '上传成功', data: url });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ code: 1, message: '上传失败', error: error.message });
+    }
+};
 const createNote = async (req, res) => {
     try {
         const {
@@ -9,13 +31,12 @@ const createNote = async (req, res) => {
             location,
             season,
             duration_days,
-            cost
+            cost,
+            image_urls,
+            video_url
         } = req.body;
 
         const userId = req.userId; // 来自 verifyToken 中间件
-
-        const imageUrls = req.files?.images?.map(file => `/uploads/image/${file.filename}`) || [];
-        const videoUrl = req.files?.video?.[0] ? `/uploads/video/${req.files.video[0].filename}` : null;
 
         const newNote = await Note.create({
             title,
@@ -24,8 +45,8 @@ const createNote = async (req, res) => {
             season,
             duration_days,
             cost,
-            image_urls: imageUrls,
-            video_url: videoUrl,
+            image_urls,
+            video_url,
             user_id: userId
         });
 
@@ -167,6 +188,8 @@ const getNotesByStatus = async (req, res) => {
 
 
 module.exports = {
+    uploadImages,
+    uploadVideo,
     createNote,
     getNoteById,
     getNoteList,

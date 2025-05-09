@@ -30,7 +30,6 @@ const register = async (req, res) => {
             return res.status(400).json({
                 code: CODE.NICKNAME_INVALID,
                 message: '用户昵称不合理',
-                status: 'false'
             });
         }
         const existingNickname = await User.findOne({ where: { nickname } });
@@ -38,7 +37,6 @@ const register = async (req, res) => {
             return res.status(400).json({
                 code: CODE.NICKNAME_INVALID,
                 message: '用户昵称已存在',
-                status: 'false'
             });
         }
 
@@ -47,7 +45,6 @@ const register = async (req, res) => {
             return res.status(400).json({
                 code: CODE.USERNAME_INVALID,
                 message: '账号不合法，需大于等于8位',
-                status: 'false'
             });
         }
         const existingUser = await User.findOne({ where: { username } });
@@ -55,7 +52,6 @@ const register = async (req, res) => {
             return res.status(400).json({
                 code: CODE.USERNAME_INVALID,
                 message: '账号已存在',
-                status: 'false'
             });
         }
 
@@ -64,7 +60,6 @@ const register = async (req, res) => {
             return res.status(400).json({
                 code: CODE.PASSWORD_MISMATCH,
                 message: '两次密码不一致',
-                status: 'false'
             });
         }
 
@@ -73,7 +68,6 @@ const register = async (req, res) => {
             return res.status(400).json({
                 code: CODE.PASSWORD_INVALID,
                 message: '密码不合法，需大于等于8位',
-                status: 'false'
             });
         }
         // 5. 密码加密
@@ -86,7 +80,6 @@ const register = async (req, res) => {
         res.status(200).json({
             code: CODE.SUCCESS,
             message: '注册成功',
-            status: 'success',  // 成功状态
             data: { id: newUser.id, nickname: newUser.nickname }
         });
     } catch (err) {
@@ -94,7 +87,6 @@ const register = async (req, res) => {
         res.status(500).json({
             code: CODE.SERVER_ERROR,
             message: '服务器内部错误',
-            status: 'false'  // 添加失败状态
         });
     }
 };

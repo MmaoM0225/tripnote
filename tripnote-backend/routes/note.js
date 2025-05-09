@@ -33,6 +33,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+router.post('/upload/image', verifyToken, upload.array('images', 9), noteController.uploadImages);
+router.post('/upload/video', verifyToken, upload.single('video'), noteController.uploadVideo);
+
 router.post(
     '/create',
     verifyToken,

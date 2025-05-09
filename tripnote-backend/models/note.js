@@ -25,7 +25,7 @@ const Note = sequelize.define('Note', {
     },
     location: { type: DataTypes.STRING(255), allowNull: true },
     season: {
-        type: DataTypes.ENUM('spring', 'summer', 'autumn', 'winter'),
+        type: DataTypes.ENUM('春季', '夏季', '秋季', '冬季'),
         allowNull: true
     },
     duration_days: { type: DataTypes.INTEGER, allowNull: true },

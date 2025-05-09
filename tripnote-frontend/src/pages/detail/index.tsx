@@ -30,8 +30,8 @@ export default function DetailPage() {
             <Text className='detail'>丽江</Text>
           </View>
           <View className='info'>
-            <Text>时间</Text>
-            <Text className='detail'>2025年5月</Text>
+            <Text>季节</Text>
+            <Text className='detail'>春季</Text>
           </View>
           <View className='info'>
             <Text>花费</Text>
