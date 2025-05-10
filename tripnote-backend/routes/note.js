@@ -46,14 +46,17 @@ router.post(
     noteController.createNote
 );
 
-router.get('/:id', noteController.getNoteById);
+router.get('/mockNote', noteController.getMockNoteList);
 
-router.get('/', noteController.getNoteList);
+router.get('/note', noteController.getNoteList);
+
+router.get('/note/:id', noteController.getNoteById);
+
+
 
 router.get('/search', verifyToken, noteController.searchNotes);
 
-
-router.get('/my-notes', verifyToken, noteController.getNotesByStatus);
+router.get('/myNotes', verifyToken, noteController.getNotesByStatus);
 
 
 

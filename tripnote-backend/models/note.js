@@ -19,7 +19,7 @@ const Note = sequelize.define('Note', {
     video_url: { type: DataTypes.STRING(500), allowNull: true },
     content: { type: DataTypes.TEXT, allowNull: true },
     view_count: { type: DataTypes.INTEGER, defaultValue: 0 },
-    audit_status: {
+    status: {
         type: DataTypes.ENUM('pending', 'approved', 'rejected'),
         defaultValue: 'pending'
     },

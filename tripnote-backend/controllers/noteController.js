@@ -1,11 +1,12 @@
 
 const { Note, User } = require('../models');
 const { Op } = require('sequelize');
-
+const mockData = require('../mockdata/note_2.json');
+const BSE_URL = 'http://localhost:3000';
 // 上传图片
 const uploadImages = (req, res) => {
     try {
-        const urls = req.files.map(file => `/uploads/image/${file.filename}`);
+        const urls = req.files.map(file => `${BSE_URL}/uploads/image/${file.filename}`);
         res.json({ code: 0, message: '上传成功', data: urls });
     } catch (error) {
         console.error(error);
@@ -16,7 +17,7 @@ const uploadImages = (req, res) => {
 // 上传视频
 const uploadVideo = (req, res) => {
     try {
-        const url = `/uploads/video/${req.file.filename}`;
+        const url = `${BSE_URL}/uploads/video/${req.file.filename}`;
         res.json({ code: 0, message: '上传成功', data: url });
     } catch (error) {
         console.error(error);
@@ -70,6 +71,7 @@ const getNoteById = async (req, res) => {
             },
             include: {
                 model: User,
+                as: 'author',
                 attributes: ['id', 'nickname', 'avatar']
             }
         });
@@ -102,6 +104,7 @@ const getNoteList = async (req, res) => {
             where: { is_deleted: false, status: 'approved' }, // 只返回已审核且未删除的
             include: {
                 model: User,
+                as: 'author',
                 attributes: ['id', 'nickname', 'avatar']
             },
             order: [['createdAt', 'DESC']],
@@ -109,10 +112,37 @@ const getNoteList = async (req, res) => {
             limit
         });
 
-        res.json({ code: 0, message: '获取成功', data: notes });
+        res.json({
+            code: 0,
+            message: '获取成功',
+            data: {
+                total:  notes.length,
+                list: notes
+            } });
     } catch (error) {
         console.error(error);
         res.status(500).json({ code: 1, message: '服务器错误', error: error.message });
+    }
+};
+
+const getMockNoteList = (req, res) => {
+    try {
+        const offset = parseInt(req.query.offset) || 0;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const slicedData = mockData.slice(offset, offset + limit);
+
+        res.json({
+            code: 0,
+            message: '获取成功（假数据）',
+            data: {
+                total: mockData.length,
+                list: slicedData
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ code: 1, message: '获取假数据失败', error: error.message });
     }
 };
 
@@ -192,8 +222,10 @@ module.exports = {
     uploadVideo,
     createNote,
     getNoteById,
+    getMockNoteList,
     getNoteList,
     searchNotes,
     getNotesByStatus,
+
 
 };

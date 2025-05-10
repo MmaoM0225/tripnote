@@ -16,10 +16,9 @@ const CODE = {
     USERNAME_NOT_FOUND: 1001,
     PASSWORD_INCORRECT: 1001,
     USER_NOT_FOUND: 1001
-
-
 };
 
+const BSE_URL = 'http://localhost:3000';
 // 注册接口
 const register = async (req, res) => {
     const { nickname, username, password, confirmPassword } = req.body;
@@ -198,7 +197,7 @@ const updateAvatar = async (req, res) => {
         return res.status(400).json({ code: 1003, message: '未上传头像文件' });
     }
 
-    const avatarUrl = `uploads/avatars/${file.filename}`;
+    const avatarUrl = `${BSE_URL}/uploads/avatars/${file.filename}`;
 
     try {
         const user = await User.findByPk(userId);
