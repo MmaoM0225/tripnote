@@ -50,9 +50,7 @@ router.get('/mockNote', noteController.getMockNoteList);
 
 router.get('/note', noteController.getNoteList);
 
-router.get('/note/:id', noteController.getNoteById);
-
-
+router.get('/:id', noteController.getNoteById);
 
 router.get('/search', verifyToken, noteController.searchNotes);
 
