@@ -5,7 +5,7 @@ import NoteCard from '../NoteCard'
 import './index.scss'
 
 interface NoteItem {
-  id: string
+  id: number
   cover: string
   title: string
   avatar: string

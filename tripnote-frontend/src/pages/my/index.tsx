@@ -94,7 +94,7 @@ export default function Index() {
           <Image
             className='avatar'
             mode='aspectFill'
-            src={user?.avatar ? 'http://localhost:3000/' + user.avatar : avatarDefault}
+            src={user?.avatar ?  user.avatar : avatarDefault}
             onClick={() => {
               if (user?.avatar) {
                 Taro.previewImage({

@@ -53,3 +53,19 @@ export const createNote = (data: NoteAPI.CreateNoteParams) => {
     data,
   });
 };
+
+export const getMockNoteList = (params: { offset?: number; limit?: number }) => {
+  return request<NoteAPI.Response<{ total: number; list: NoteAPI.NoteItem[] }>>({
+    url: `${BASE_URL}/note/mockNote`,
+    method: 'GET',
+    data: params,
+  });
+};
+
+export const getNoteList = (params: { offset?: number; limit?: number }) => {
+  return request<NoteAPI.Response<NoteAPI.NoteItem[]>>({
+    url: `${BASE_URL}/note/note`,
+    method: 'GET',
+    data: params,
+  });
+};

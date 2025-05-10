@@ -1,8 +1,10 @@
 import React from 'react'
 import { View, Image, Text } from '@tarojs/components'
 import './index.scss'
+import Taro from "@tarojs/taro";
 
 interface NoteCardProps {
+  id: number
   cover: string
   title: string
   avatar: string
@@ -11,10 +13,14 @@ interface NoteCardProps {
 }
 
 // 使用 React.memo 来优化性能
-const NoteCard: React.FC<NoteCardProps> = React.memo(({ cover, title, avatar, nickname, views }) => {
+const NoteCard: React.FC<NoteCardProps> = React.memo(({id, cover, title, avatar, nickname, views }) => {
+
+  const handleClick = () => {
+    Taro.navigateTo({url: `/pages/detail/index?id=${id}`})
+  }
   return (
-    <View className="waterfall-item">
-      <Image src={cover} className="item-cover" lazyLoad={true} mode="widthFix" />
+    <View className="waterfall-item" onClick={handleClick}>
+      <Image src={cover} className="item-cover" mode="widthFix" />
       <View className="item-title">
         <Text>{title}</Text>
       </View>
