@@ -69,3 +69,10 @@ export const getNoteList = (params: { offset?: number; limit?: number }) => {
     data: params,
   });
 };
+
+export const getNoteById = (id: number | string) => {
+  return request<NoteAPI.Response<NoteAPI.NoteItem>>({
+    url: `${BASE_URL}/note/${id}`,
+    method: 'GET',
+  });
+};
