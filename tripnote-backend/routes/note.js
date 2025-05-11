@@ -47,14 +47,14 @@ router.post(
 );
 
 router.get('/mockNote', noteController.getMockNoteList);
-
 router.get('/note', noteController.getNoteList);
-
+router.get('/search', verifyToken, noteController.searchNotes);
+router.get('/myNotes', verifyToken, noteController.getNotesByStatus);
 router.get('/:id', noteController.getNoteById);
 
-router.get('/search', verifyToken, noteController.searchNotes);
+router.delete('/deleteNote/:id', verifyToken, noteController.deleteNote);
 
-router.get('/myNotes', verifyToken, noteController.getNotesByStatus);
+router.put('/updateNote/:id', verifyToken, noteController.updateNote);
 
 
 

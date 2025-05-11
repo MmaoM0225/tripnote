@@ -66,7 +66,6 @@ const getNoteById = async (req, res) => {
             where: {
                 id: noteId,
                 is_deleted: false,
-                status: 'approved'
 
             },
             include: {
@@ -75,6 +74,8 @@ const getNoteById = async (req, res) => {
                 attributes: ['id', 'nickname', 'avatar']
             }
         });
+
+        await Note.increment('view_count', { where: { id: noteId } });
 
         if (!note) {
             return res.status(404).json({ code: 1004, message: '游记不存在' });
@@ -216,6 +217,60 @@ const getNotesByStatus = async (req, res) => {
     }
 };
 
+const deleteNote = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const noteId = req.params.id;
+
+        const note = await Note.findOne({ where: { id: noteId, user_id: userId } });
+
+        if (!note) {
+            return res.status(404).json({ code: 1, message: '游记不存在或无权限删除' });
+        }
+
+        await note.update({ is_deleted: true });
+
+        res.json({ code: 0, message: '删除成功' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ code: 1, message: '删除游记失败', error: error.message });
+    }
+};
+
+const updateNote = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const noteId = req.params.id;
+        const { title, content, image_urls, video_url, location, season, cost, duration_days } = req.body;
+
+        // 查找游记
+        const note = await Note.findOne({ where: { id: noteId, user_id: userId, is_deleted: false } });
+
+        if (!note) {
+            return res.status(404).json({ code: 1, message: '游记不存在或无权限修改' });
+        }
+
+        // 更新游记数据
+        await note.update({
+            title: title ?? note.title,
+            content: content ?? note.content,
+            location: location ?? note.location,
+            season: season ?? note.season,
+            cost: cost ?? note.cost,
+            duration_days: duration_days ?? note.duration_days,
+            image_urls: image_urls ?? note.image_urls,
+            video_url: video_url ?? note.video_url,
+            status: 'pending',
+        });
+
+        // 返回更新后的数据
+        res.json({ code: 0, message: '修改成功', data: note });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ code: 1, message: '修改游记失败', error: error.message });
+    }
+};
+
 
 module.exports = {
     uploadImages,
@@ -226,6 +281,8 @@ module.exports = {
     getNoteList,
     searchNotes,
     getNotesByStatus,
+    deleteNote,
+    updateNote,
 
 
 };
