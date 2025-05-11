@@ -6,6 +6,7 @@ import Waterfall from "../../components/Waterfall"
 
 import logo from '../../assets/logo.png'
 import {getMockNoteList, getNoteList} from "../../api/note";
+import Taro from "@tarojs/taro";
 
 interface NoteItem {
   id: number
@@ -148,7 +149,7 @@ export default function Index() {
             关注
           </View>
         </View>
-        <View className="search-btn">
+        <View className="search-btn" onClick={() => {Taro.navigateTo({url: '/pages/search/index'})}}>
           <AtIcon value='search' size='24' color='#333' />
         </View>
       </View>

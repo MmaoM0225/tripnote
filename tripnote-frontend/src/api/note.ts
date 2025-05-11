@@ -99,3 +99,11 @@ export const updateNote = (id: string, data: Partial<NoteAPI.NoteItem>) => {
     data, // 包含要修改的字段，例如 title、content、images、video
   });
 };
+
+export const searchNotes = (params: { keyword: string; offset?: number; limit?: number }) => {
+  return request<NoteAPI.Response<{ total: number; list: NoteAPI.NoteItem[] }>>({
+    url: `${BASE_URL}/note/search`,
+    method: 'GET',
+    data: params,
+  });
+};

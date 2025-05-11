@@ -1,0 +1,87 @@
+@import "~taro-ui/dist/style/components/icon.scss";
+
+.search-page {
+  padding: 20px;
+
+  .search-bar {
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    width: 95%;
+    height: 80px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 30px;
+
+    .search-input {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 28px;
+      background-color: #f9f9f9;
+    }
+
+    .search-icon {
+      width: 60px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  .section {
+    padding-top: 80px;
+    margin-bottom: 40px;
+
+    .section-title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      color: #333;
+    }
+
+    .hot-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .hot-item {
+        display: flex;
+        align-items: center;
+        font-size: 28px;
+        color: #333;
+      }
+
+      .hot-icon {
+        margin-right: 12px;
+        font-size: 30px;
+        color: #ff4d4f;
+      }
+
+      .hot-title {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .history-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .tag {
+        background-color: #eee;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 26px;
+        color: #555;
+      }
+    }
+  }
+}
