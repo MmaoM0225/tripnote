@@ -149,8 +149,9 @@ const getMockNoteList = (req, res) => {
 
 const searchNotes = async (req, res) => {
     try {
-        const { keyword = '', offset = 0, limit = 10 } = req.query;
-
+        const keyword = req.query.keyword;
+        const offset = parseInt(req.query.offset) || 0;
+        const limit = parseInt(req.query.limit) || 10;
         const notes = await Note.findAndCountAll({
             where: {
                 [Op.or]: [
@@ -283,6 +284,4 @@ module.exports = {
     getNotesByStatus,
     deleteNote,
     updateNote,
-
-
 };
