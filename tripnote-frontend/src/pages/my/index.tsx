@@ -1,4 +1,4 @@
-import {View, Text, Image, Button} from '@tarojs/components';
+import {View, Text, Image, Button, ScrollView} from '@tarojs/components';
 import {AtIcon, AtImagePicker, AtList, AtListItem} from 'taro-ui';
 import './index.scss';
 import Taro, { navigateTo, eventCenter} from '@tarojs/taro';
@@ -6,6 +6,9 @@ import { useAuth } from '../../hooks/useAuth'; // 导入useAuth hook
 import avatarDefault from '../../assets/avatar-default.jpg';
 import {useEffect, useState} from "react";
 import {uploadAvatar} from "../../api/user";
+import { getNotesByStatus } from '../../api/note';
+import {NoteAPI} from "../../../types/note";
+
 
 
 export default function Index() {
@@ -13,31 +16,21 @@ export default function Index() {
   const { user, isLoggedIn, reloadUserInfo } = useAuth();
   const [showEdit, setShowEdit] = useState(false);
   const [files, setFiles] = useState<{ url: string }[]>([]);
+  const [notes, setNotes] = useState<NoteAPI.NoteItem[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string>('approved');
+  const handleJournalClick = async (status: string) => {
+    setSelectedStatus(status);
 
-// 监听登录成功事件
-  useEffect(() => {
-    const handleLoginSuccess = () => {
-      reloadUserInfo(); // 重新加载用户信息
-    };
-
-    eventCenter.on('loginSuccess', handleLoginSuccess);
-    return () => {
-      eventCenter.off('loginSuccess', handleLoginSuccess);
-    };
-  }, []);
-  const handleJournalClick = (status: string) => {
-    switch (status) {
-      case 'published':
-        navigateTo({ url: '/pages/journals/published' });
-        break;
-      case 'pending':
-        navigateTo({ url: '/pages/journals/pending' });
-        break;
-      case 'rejected':
-        navigateTo({ url: '/pages/journals/rejected' });
-        break;
-      default:
-        break;
+    try {
+      const res = await getNotesByStatus(status);
+      if (res.data.code === 0) {
+        setNotes(res.data.data);
+      } else {
+        Taro.showToast({ title: '获取游记失败', icon: 'none' });
+      }
+    } catch (error) {
+      console.error(error);
+      Taro.showToast({ title: '请求错误', icon: 'none' });
     }
   };
   const handleUpload = async () => {
@@ -62,6 +55,18 @@ export default function Index() {
       Taro.showToast({ title: e.message || '上传失败', icon: 'none' });
     }
   };
+
+  useEffect(() => {
+    const handleLoginSuccess = () => {
+      reloadUserInfo(); // 重新加载用户信息
+    };
+    eventCenter.on('loginSuccess', handleLoginSuccess);
+    // 默认加载已发布的游记
+    handleJournalClick('approved');
+    return () => {
+      eventCenter.off('loginSuccess', handleLoginSuccess);
+    };
+  }, []);
 
   return (
     <View className='me-page'>
@@ -98,8 +103,8 @@ export default function Index() {
             onClick={() => {
               if (user?.avatar) {
                 Taro.previewImage({
-                  current: 'http://localhost:3000/' + user.avatar, // 当前显示图片
-                  urls: ['http://localhost:3000/' + user.avatar], // 图片列表
+                  current: user.avatar, // 当前显示图片
+                  urls: [user.avatar], // 图片列表
                 });
               }
             }}
@@ -129,7 +134,7 @@ export default function Index() {
       <View className='my-journals-wrapper'>
         <View className='journals-title'>我的游记</View>
         <View className='my-journals'>
-          <View className='journal-item' onClick={() => handleJournalClick('published')}>
+          <View className='journal-item' onClick={() => handleJournalClick('approved')}>
             <AtIcon value='check-circle' size='30' color='#34C759' />
             <Text>已发布</Text>
           </View>
@@ -145,7 +150,38 @@ export default function Index() {
       </View>
 
       {/* 其他 区域 */}
-      <View className='other'></View>
+      <ScrollView className='other' scrollY>
+        {selectedStatus && (
+          <View className='journal-list'>
+            <Text className='journal-list-title'>
+              {selectedStatus === 'approved' && '已发布游记'}
+              {selectedStatus === 'pending' && '待审核游记'}
+              {selectedStatus === 'rejected' && '未通过游记'}
+            </Text>
+            {notes.length > 0 ? (
+              notes.map(note => (
+                <View
+                  className='note-card'
+                  key={note.id}
+                  onClick={() => navigateTo({ url: `/pages/detail/index?id=${note.id}` })}
+                >
+                  <Image className='note-cover' src={note.image_urls?.[0]} mode='aspectFill' />
+                  <View className='note-info'>
+                    <Text className='note-title'>{note.title}</Text>
+                    <Text className='note-location'>{note.location}</Text>
+                  </View>
+                  <Text className='detail-btn'>
+                    游记详情
+                  </Text>
+                  <AtIcon value='chevron-right' size='20' color='#999' />
+                </View>
+              ))
+            ) : (
+              <Text className='no-data'>暂无游记</Text>
+            )}
+          </View>
+        )}
+      </ScrollView>
 
       {/* 客服 & 设置 */}
       <AtList className='bottom-list'>
