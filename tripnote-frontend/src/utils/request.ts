@@ -13,4 +13,5 @@ const request = <T = any>(options: Taro.request.Option): Promise<{ data: T }> =>
   });
 };
 
+
 export default request;

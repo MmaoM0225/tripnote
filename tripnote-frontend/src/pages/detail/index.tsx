@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View, Text, Image, Video, Input, Swiper, SwiperItem } from '@tarojs/components'
 import { AtIcon, AtButton } from 'taro-ui'
-import { getNoteById } from '../../api/note'
+import {deleteNoteById, getNoteById} from '../../api/note'
 import './index.scss'
 import {NoteAPI} from "../../../types/note";
+
 
 export default function DetailPage() {
   const router = useRouter()
   const noteId = router.params.id
+  const currentUser = Taro.getStorageSync('user')
+
 
   const [note, setNote] = useState<NoteAPI.NoteItem | null>(null)
 
@@ -38,6 +41,33 @@ export default function DetailPage() {
     author
   } = note
 
+  const isOwner = note?.author?.id === currentUser?.id
+
+  const handleEdit = () => {
+    Taro.navigateTo({
+      url: `/pages/edit/index?id=${noteId}`
+    })
+  }
+
+  const handleDelete = async () => {
+    Taro.showModal({
+      title: '确认删除',
+      content: '删除后无法恢复，是否确认？',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            await deleteNoteById(noteId as string)
+            Taro.showToast({ title: '删除成功', icon: 'success' })
+            setTimeout(() => {
+              Taro.navigateBack()
+            }, 1000)
+          } catch (err) {
+            Taro.showToast({ title: '删除失败', icon: 'none' })
+          }
+        }
+      }
+    })
+  }
   return (
     <View className='detail-page'>
 
@@ -48,7 +78,14 @@ export default function DetailPage() {
           <Text className='name'>{author.nickname}</Text>
         </View>
         <View>
-          <AtButton size='small' type='primary'>关注</AtButton>
+          {isOwner ? (
+            <View className='owner-actions'>
+              <AtButton size='small'  onClick={handleEdit}>编辑</AtButton>
+              <AtButton size='small'  onClick={handleDelete}>删除</AtButton>
+            </View>
+          ) : (
+            <AtButton size='small' type='primary'>关注</AtButton>
+          )}
         </View>
       </View>
 
@@ -83,7 +120,15 @@ export default function DetailPage() {
           )}
           {image_urls.map((url, i) => (
             <SwiperItem key={i}>
-              <Image className='swiper-img' src={url} mode='aspectFill' />
+              <Image
+                className='swiper-img'
+                src={url}
+                mode='aspectFill'
+                onClick={() => Taro.previewImage({
+                  current: url, // 当前点击的图片
+                  urls: image_urls // 图片列表
+                })}
+              />
             </SwiperItem>
           ))}
         </Swiper>

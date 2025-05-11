@@ -26,7 +26,7 @@ const parseNoteData = (raw: any): NoteItem => ({
 })
 
 export default function Index() {
-  const PAGE_SIZE = 10
+  const PAGE_SIZE = 20
 
   // 每个 tab 独立维护自己的数据
   const [discoveryData, setDiscoveryData] = useState<NoteItem[]>([])

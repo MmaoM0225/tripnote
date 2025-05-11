@@ -27,6 +27,10 @@
         font-weight: bold;
       }
     }
+    .owner-actions {
+      display: flex;
+      gap: 8px;
+    }
   }
 
   .content {

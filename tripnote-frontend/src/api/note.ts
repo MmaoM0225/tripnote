@@ -76,3 +76,26 @@ export const getNoteById = (id: number | string) => {
     method: 'GET',
   });
 };
+
+export const getNotesByStatus = (status: string) => {
+  return request<NoteAPI.Response<NoteAPI.NoteItem[]>>({
+    url: `${BASE_URL}/note/myNotes`,
+    method: 'GET',
+    data: { status },
+  })
+}
+
+export const deleteNoteById = (id: string) => {
+  return request<NoteAPI.Response<any>>({
+    url: `${BASE_URL}/note/deleteNote/${id}`,  // 通过 id 删除
+    method: 'DELETE',  // 删除请求
+  });
+}
+
+export const updateNote = (id: string, data: Partial<NoteAPI.NoteItem>) => {
+  return request<NoteAPI.Response<NoteAPI.NoteItem>>({
+    url: `${BASE_URL}/note/updateNote/${id}`,
+    method: 'PUT',
+    data, // 包含要修改的字段，例如 title、content、images、video
+  });
+};
