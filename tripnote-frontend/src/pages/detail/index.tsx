@@ -5,9 +5,27 @@ import { AtIcon, AtButton } from 'taro-ui'
 import {deleteNoteById, getNoteById} from '../../api/note'
 import './index.scss'
 import {NoteAPI} from "../../../types/note";
+import { useShareAppMessage, useShareTimeline } from '@tarojs/taro'
+
 
 
 export default function DetailPage() {
+  useShareAppMessage(() => {
+    return {
+      title: note?.title || '精彩游记',
+      path: `/pages/detail/index?id=${noteId}`, // 注意路径是否正确
+      imageUrl: note?.image_urls?.[0] || '', // 分享封面图（可选）
+    }
+  })
+
+  useShareTimeline(() => {
+    return {
+      title: note?.title || '精彩游记',
+      query: `id=${noteId}`,
+      imageUrl: note?.image_urls?.[0] || '',
+    }
+  })
+
   const router = useRouter()
   const noteId = router.params.id
   const currentUser = Taro.getStorageSync('user')
