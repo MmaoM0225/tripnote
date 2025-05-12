@@ -174,6 +174,12 @@ export default function DetailPage() {
           <Text>24</Text>
         </View>
       </View>
+      {note.status === 'rejected' && note.reject_reason && (
+        <View className='reject-reason'>
+          <Text className='reject-title'>审核未通过：</Text>
+          <Text className='reject-text'>{note.reject_reason}</Text>
+        </View>
+      )}
     </View>
   )
 }

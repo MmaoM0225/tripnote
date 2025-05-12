@@ -128,3 +128,20 @@
   height: 100%;
   border-radius: 8px;
 }
+
+.reject-reason {
+  background-color: #fff5f5;
+  border-top: 1px solid #ffccc7;
+  padding-bottom: 60px;
+  margin-top: 20px;
+
+  .reject-title {
+    color: #f5222d;
+    font-weight: bold;
+    margin-bottom: 10rpx;
+  }
+
+  .reject-text {
+    color: #a8071a;
+  }
+}
