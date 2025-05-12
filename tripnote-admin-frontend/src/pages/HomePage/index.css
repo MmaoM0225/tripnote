@@ -1,0 +1,28 @@
+.audit-list-page {
+    padding: 24px;
+    background: #f5f5f5;
+    min-height: 100vh;
+}
+
+.audit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 0 24px;
+    box-shadow: 0 2px 8px #f0f1f2;
+}
+
+.audit-logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.audit-user-info {
+    display: flex;
+    align-items: center;
+}
+
+.audit-user-info span {
+    margin-left: 8px;
+}
