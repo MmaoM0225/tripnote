@@ -98,12 +98,12 @@ const login = async (req, res) => {
         const user = await User.findOne({ where: { username } });
 
         if (!user) {
-            return res.status(400).json({ code: CODE.USERNAME_NOT_FOUND, message: '账号或密码错误' });
+            return res.status(200).json({ code: CODE.USERNAME_NOT_FOUND, message: '账号或密码错误' });
         }
 
         const isMatch = bcrypt.compareSync(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ code: CODE.PASSWORD_INCORRECT, message: '账号或密码错误' });
+            return res.status(200).json({ code: CODE.PASSWORD_INCORRECT, message: '账号或密码错误' });
         }
 
         // 生成 JWT

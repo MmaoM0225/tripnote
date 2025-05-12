@@ -11,7 +11,7 @@ const User = sequelize.define('User', {
     phone: { type: DataTypes.STRING },
     email: { type: DataTypes.STRING },
     is_deleted: { type: DataTypes.BOOLEAN, defaultValue: false },
-    role: { type: DataTypes.STRING, defaultValue: 'user' }
+    role: {type: DataTypes.ENUM('user', 'reviewer', 'admin'), allowNull: false, defaultValue: 'user'},
 }, {
     timestamps: true,
     tableName: 'user'

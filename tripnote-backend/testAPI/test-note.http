@@ -7,3 +7,6 @@ GET http://localhost:3000/api/note/mockNote?offset=0&limit=10
 
 ### 检查获取模拟游记列表接口测试
 GET http://localhost:3000/api/note/55
+
+### 检查获记列表接口测试
+GET http://localhost:3000/api/admin/notes?status=all

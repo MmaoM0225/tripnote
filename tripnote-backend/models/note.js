@@ -30,7 +30,12 @@ const Note = sequelize.define('Note', {
     },
     duration_days: { type: DataTypes.INTEGER, allowNull: true },
     cost: { type: DataTypes.DECIMAL(10, 2), allowNull: true },
-    is_deleted: { type: DataTypes.BOOLEAN, defaultValue: false }
+    is_deleted: { type: DataTypes.BOOLEAN, defaultValue: false },
+    reject_reason: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        comment: '拒绝原因',
+    },
 }, {
     timestamps: true,
     tableName: 'note'

@@ -16,6 +16,9 @@ app.use('/api/user', userRoutes)
 // 引入笔记路由
 const noteRoutes = require('./routes/note');
 app.use('/api/note', noteRoutes);
+// 引入管理员路由
+const adminRoutes = require('./routes/admin');
+app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
