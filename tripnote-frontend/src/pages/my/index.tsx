@@ -18,6 +18,21 @@ export default function Index() {
   const [files, setFiles] = useState<{ url: string }[]>([]);
   const [notes, setNotes] = useState<NoteAPI.NoteItem[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>('approved');
+
+  const handleLogout = () => {
+    Taro.showModal({
+      title: '提示',
+      content: '确定要退出登录吗？',
+      success: function (res) {
+        if (res.confirm) {
+          Taro.removeStorageSync('token');
+          Taro.removeStorageSync('user');
+          reloadUserInfo(); // 触发重新加载用户状态
+          Taro.showToast({ title: '已退出登录', icon: 'success' });
+        }
+      }
+    });
+  };
   const handleJournalClick = async (status: string) => {
     setSelectedStatus(status);
 
@@ -59,6 +74,7 @@ export default function Index() {
   useEffect(() => {
     const handleLoginSuccess = () => {
       reloadUserInfo(); // 重新加载用户信息
+      handleJournalClick(selectedStatus);
     };
     eventCenter.on('loginSuccess', handleLoginSuccess);
     // 默认加载已发布的游记
@@ -149,8 +165,8 @@ export default function Index() {
         </View>
       </View>
 
-      {/* 其他 区域 */}
-      <ScrollView className='other' scrollY>
+      {/* 游记列表 区域 */}
+      <ScrollView className='journal-lists' scrollY>
         {selectedStatus && (
           <View className='journal-list'>
             <Text className='journal-list-title'>
@@ -187,6 +203,7 @@ export default function Index() {
       <AtList className='bottom-list'>
         <AtListItem title='联系客服' arrow='right' iconInfo={{ value: 'phone' }} />
         <AtListItem title='设置' arrow='right' iconInfo={{ value: 'settings' }} />
+        <AtListItem title='退出登录' arrow='right' iconInfo={{ value: 'play'}} onClick={handleLogout}/>
       </AtList>
     </View>
   );

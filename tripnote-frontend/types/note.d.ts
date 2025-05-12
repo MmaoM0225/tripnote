@@ -33,6 +33,7 @@ export namespace NoteAPI {
     updatedAt: string;
     image_urls: string[]; // 第一张通常作为封面图使用
     author: Author;
+    reject_reason: string;
   }
 
   export interface Response<T = any> {
