@@ -1,0 +1,64 @@
+.form-section {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+
+    .input-label {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .input-field {
+      flex: 31;
+      padding: 12px;
+      font-size: 28px;
+      background: #fdfdfd;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    .season-tags {
+      flex:3;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+
+      .season-tag {
+        padding: 10px 20px;
+        background-color: #f0f0f0;
+        border-radius: 20px;
+        font-size: 26px;
+        color: #333;
+        border: 1px solid transparent;
+      }
+
+      .season-tag.active {
+        background-color: #0084ff;
+        color: white;
+        border-color: #0084ff;
+      }
+    }
+  }
+
+  .textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 12px;
+    font-size: 28px;
+    background: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+
+}
