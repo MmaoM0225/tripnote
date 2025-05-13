@@ -20,9 +20,30 @@ export default function PublishPage() {
   const [cost, setCost] = useState('')
   const [days, setDays] = useState('')
 
-  const handleChangeImages = (newFiles) => {
-    setFiles(newFiles)
-  }
+  // const handleChangeImages = (newFiles) => {
+  //   setFiles(newFiles)
+  // }
+  const handleChangeImages = async (newFiles, operationType) => {
+    if (operationType === 'add') {
+      const compressedFiles = await Promise.all(
+        newFiles.map(async (file) => {
+          const filePath = file.path || file.url;
+          const compressed = await Taro.compressImage({
+            src: filePath,
+            quality: 80 // 压缩质量
+          });
+          return {
+            ...file,
+            url: compressed.tempFilePath,
+            path: compressed.tempFilePath,
+          };
+        })
+      );
+      setFiles([...files, ...compressedFiles]);
+    } else {
+      setFiles(newFiles);
+    }
+  };
 
   const handleChooseVideo = async () => {
     if (video) {
@@ -71,6 +92,7 @@ export default function PublishPage() {
       setTimeout(() => {
         eventCenter.trigger('refreshJournals');
       }, 1000);
+      Taro.switchTab({ url: '/pages/my/index' })
 
     } catch (err) {
       Taro.hideLoading();
