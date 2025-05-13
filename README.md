@@ -156,7 +156,7 @@ npm start
 
 ### 📂 项目源码地址
 
-- GitHub：https://github.com/yourname/travel-note-platform
+- GitHub：https://github.com/MmaoM0225/tripnote
 
 ------
 
