@@ -149,28 +149,31 @@ const getMockNoteList = (req, res) => {
 
 const searchNotes = async (req, res) => {
     try {
-        const keyword = req.query.keyword;
+        const keyword = req.query.keyword || '';
         const offset = parseInt(req.query.offset) || 0;
         const limit = parseInt(req.query.limit) || 10;
+
         const notes = await Note.findAndCountAll({
             where: {
-                [Op.or]: [
-                    { title: { [Op.like]: `%${keyword}%` } },
-                    { location: { [Op.like]: `%${keyword}%` } },
-                    { season: { [Op.like]: `%${keyword}%` } }
-                ],
-                is_deleted: false,
-                status: 'approved' // 已审核
+                [Op.and]: [
+                    {
+                        [Op.or]: [
+                            { title: { [Op.like]: `%${keyword}%` } },
+                            { location: { [Op.like]: `%${keyword}%` } },
+                            { season: { [Op.like]: `%${keyword}%` } },
+                            { '$author.nickname$': { [Op.like]: `%${keyword}%` } } // ✅ 关键：跨表搜索用户昵称
+                        ]
+                    },
+                    { is_deleted: false },
+                    { status: 'approved' }
+                ]
             },
             include: [
                 {
                     model: User,
                     as: 'author',
                     attributes: ['id', 'nickname'],
-                    where: {
-                        nickname: { [Op.like]: `%${keyword}%` }
-                    },
-                    required: false // 允许没有匹配作者
+                    required: false // 即使作者不匹配也返回
                 }
             ],
             offset: offset,
