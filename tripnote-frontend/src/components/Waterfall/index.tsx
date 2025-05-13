@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, {useState, useEffect, useRef, useCallback} from 'react'
 import { View, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import NoteCard from '../NoteCard'
@@ -17,14 +17,33 @@ interface WaterfallProps {
   data: NoteItem[]
   hasMore: boolean
   loadMore: () => void
+  loading: boolean
 }
 
-const Waterfall: React.FC<WaterfallProps> = ({ data, hasMore, loadMore }) => {
+const Waterfall: React.FC<WaterfallProps> = ({ data, hasMore, loadMore,loading  }) => {
   const [leftList, setLeftList] = useState<NoteItem[]>([])
   const [rightList, setRightList] = useState<NoteItem[]>([])
 
   const leftHeight = useRef(0)
   const rightHeight = useRef(0)
+  const lastCallTime = useRef(0)
+  const throttleDelay = 1000  // 设置节流时间，例如 1 秒
+
+  const throttledLoadMore = useCallback(() => {
+    const now = Date.now()
+
+    // 未到达间隔，不执行
+    if (now - lastCallTime.current < throttleDelay) return
+
+    if (!loading && hasMore) {
+      lastCallTime.current = now
+      loadMore()
+    }
+  }, [loading, hasMore, loadMore])
+  const onScrollToLower = () => {
+    console.log('触发 onScrollToLower')
+    throttledLoadMore()
+  }
 
   useEffect(() => {
     distributeItems(data.slice(leftList.length + rightList.length))
@@ -51,18 +70,14 @@ const Waterfall: React.FC<WaterfallProps> = ({ data, hasMore, loadMore }) => {
     })
   }
 
-  const onScrollToLower = () => {
-    if (hasMore) {
-      loadMore()
-    }
-  }
-
   return (
     <ScrollView
       scrollY
-      style={{ height: '100vh' }}
-      lowerThreshold={150}
+      style={{ height: 'calc(100vh - 50px)' }}
+      lowerThreshold={600}
       onScrollToLower={onScrollToLower}
+      enhanced
+      bounces={false}
     >
       <View className="waterfall-container">
         <View className="column left-column">

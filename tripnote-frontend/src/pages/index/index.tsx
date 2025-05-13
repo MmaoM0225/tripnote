@@ -91,9 +91,9 @@ export default function Index() {
       }
     } catch (error) {
       console.error('加载更多数据失败：', error)
+    }finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   useEffect(() => {
@@ -168,6 +168,7 @@ export default function Index() {
               hasMoreFollow
         }
         loadMore={loadMore}
+        loading={loading}
       />
     </View>
   )

@@ -1,7 +1,7 @@
 @import "~taro-ui/dist/style/components/icon.scss";
 @import "~taro-ui/dist/style/components/tabs.scss";
 .index-page {
-  padding-top: 70px; // 给 navbar 留空间
+  padding-top: 95px; // 给 navbar 留空间
 }
 
 .navbar {
@@ -20,24 +20,20 @@
 .tabs-wrapper {
   flex: 3;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   gap: 16px;
   margin-top: 8px;
   flex-wrap: wrap;
 
   .tab {
     padding: 10px 20px;
-    background-color: #f0f0f0;
-    border-radius: 20px;
     font-size: 26px;
     color: #333;
     border: 1px solid transparent;
   }
 
   .tab.active {
-    background-color: #0084ff;
-    color: white;
-    border-color: #0084ff;
+    border-bottom: 1px solid #0084ff;
   }
 }
 
