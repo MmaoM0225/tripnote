@@ -17,10 +17,10 @@ const NoteDetail: React.FC = () => {
     const navigate = useNavigate();
     const [note, setNote] = useState<NoteAPI.NoteItem | null>(null);
     const [rejectModalOpen, setRejectModalOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const isAdmin = user.role === 'admin';
-
     const loadNote = async () => {
         try {
             const res = await getNoteById(Number(id));
@@ -52,19 +52,6 @@ const NoteDetail: React.FC = () => {
         message.success('审核已拒绝');
         setRejectModalOpen(false);
         navigate('/');
-    };
-
-    const handleDelete = async () => {
-        Modal.confirm({
-            title: '确认删除此游记？',
-            okText: '确认',
-            cancelText: '取消',
-            onOk: async () => {
-                await deleteNote(Number(id));
-                message.success('已删除');
-                navigate('/');
-            },
-        });
     };
 
     if (!note) return <div style={{ padding: 24 }}>加载中...</div>;
@@ -104,7 +91,7 @@ const NoteDetail: React.FC = () => {
                     <Button type="primary" onClick={handleApprove}>通过</Button>
                     <Button danger onClick={() => setRejectModalOpen(true)}>拒绝</Button>
                     {isAdmin && (
-                        <Button danger onClick={handleDelete}>删除</Button>
+                        <Button danger onClick={() => setDeleteModalOpen(true)}>删除</Button>
                     )}
                 </div>
             </Card>
@@ -123,6 +110,18 @@ const NoteDetail: React.FC = () => {
           value={rejectReason}
           onChange={(e) => setRejectReason(e.target.value)}
       />
+            </Modal>
+            <Modal
+                open={deleteModalOpen}
+                title="确认删除"
+                onCancel={() => setDeleteModalOpen(false)}
+                onOk={async () => {
+                    await deleteNote(Number(id));
+                    message.success('已删除');
+                    navigate('/');
+                }}
+            >
+                <p>你确定要删除此游记吗？删除后不可恢复。</p>
             </Modal>
         </div>
     );
