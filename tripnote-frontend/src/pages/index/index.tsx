@@ -169,6 +169,7 @@ export default function Index() {
         }
         loadMore={loadMore}
         loading={loading}
+        resetKey={currentTab}
       />
     </View>
   )

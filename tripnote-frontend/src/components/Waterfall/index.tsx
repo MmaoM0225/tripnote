@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react'
+import {useState, useEffect, useRef, useCallback} from 'react'
 import { View, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import NoteCard from '../NoteCard'
@@ -18,16 +18,17 @@ interface WaterfallProps {
   hasMore: boolean
   loadMore: () => void
   loading: boolean
+  resetKey: string
 }
 
-const Waterfall: React.FC<WaterfallProps> = ({ data, hasMore, loadMore,loading  }) => {
+const Waterfall = ({ data, hasMore, loadMore, loading, resetKey }: WaterfallProps)  => {
   const [leftList, setLeftList] = useState<NoteItem[]>([])
   const [rightList, setRightList] = useState<NoteItem[]>([])
 
   const leftHeight = useRef(0)
   const rightHeight = useRef(0)
   const lastCallTime = useRef(0)
-  const throttleDelay = 1000  // 设置节流时间，例如 1 秒
+  const throttleDelay = 1500  // 设置节流时间，例如 1 秒
 
   const throttledLoadMore = useCallback(() => {
     const now = Date.now()
@@ -41,7 +42,6 @@ const Waterfall: React.FC<WaterfallProps> = ({ data, hasMore, loadMore,loading  
     }
   }, [loading, hasMore, loadMore])
   const onScrollToLower = () => {
-    console.log('触发 onScrollToLower')
     throttledLoadMore()
   }
 
@@ -70,6 +70,13 @@ const Waterfall: React.FC<WaterfallProps> = ({ data, hasMore, loadMore,loading  
     })
   }
 
+  useEffect(() => {
+    setLeftList([])
+    setRightList([])
+    leftHeight.current = 0
+    rightHeight.current = 0
+  }, [resetKey])
+
   return (
     <ScrollView
       scrollY
@@ -78,6 +85,7 @@ const Waterfall: React.FC<WaterfallProps> = ({ data, hasMore, loadMore,loading  
       onScrollToLower={onScrollToLower}
       enhanced
       bounces={false}
+      showScrollbar={false}
     >
       <View className="waterfall-container">
         <View className="column left-column">
